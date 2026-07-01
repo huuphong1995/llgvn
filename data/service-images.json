@@ -1,0 +1,59 @@
+{
+  "dich-vu-kiem-nghiem-thuc-pham-chuc-nang": {
+    "image": "/uploads/services/dich-vu-kiem-nghiem-thuc-pham-chuc-nang.png",
+    "display": {
+      "fit": "cover",
+      "scale": 99,
+      "positionX": 43,
+      "positionY": 15
+    }
+  },
+  "dich-vu-tu-van-thu-nghiem-thuc-pham": {
+    "image": "/uploads/services/dich-vu-tu-van-thu-nghiem-thuc-pham.png",
+    "display": {
+      "fit": "cover",
+      "scale": 109,
+      "positionX": 29,
+      "positionY": 32
+    }
+  },
+  "dich-vu-tu-van-thu-nghiem-bao-bi-thuc-pham": {
+    "image": "/uploads/services/dich-vu-tu-van-thu-nghiem-bao-bi-thuc-pham.png",
+    "display": {
+      "fit": "cover",
+      "scale": 106,
+      "positionX": 55,
+      "positionY": 16
+    }
+  },
+  "dich-vu-tu-van-thu-nghiem-trang-thiet-bi-y-te": {
+    "image": "/uploads/services/dich-vu-tu-van-thu-nghiem-trang-thiet-bi-y-te.png"
+  },
+  "dich-vu-tu-van-cong-bo-thuc-pham": {
+    "image": "/uploads/services/dich-vu-tu-van-cong-bo-thuc-pham.png",
+    "display": {
+      "fit": "cover",
+      "scale": 111,
+      "positionX": 26,
+      "positionY": 31
+    }
+  },
+  "dich-vu-tu-van-cong-bo-bao-bi-thuc-pham": {
+    "image": "/uploads/services/dich-vu-tu-van-cong-bo-bao-bi-thuc-pham.png",
+    "display": {
+      "fit": "cover",
+      "scale": 111,
+      "positionX": 17,
+      "positionY": 23
+    }
+  },
+  "dich-vu-dao-tao-tu-van-iso": {
+    "image": "/uploads/services/dich-vu-dao-tao-tu-van-iso.jpg"
+  },
+  "dich-vu-tu-van-cong-bo-thiet-bi-y-te": {
+    "image": "/uploads/services/dich-vu-tu-van-cong-bo-thiet-bi-y-te.png"
+  },
+  "dich-vu-tu-van-cong-bo-hop-chuan-hop-quy": {
+    "image": "/uploads/services/dich-vu-tu-van-cong-bo-hop-chuan-hop-quy.png"
+  }
+}

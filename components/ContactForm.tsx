@@ -2,11 +2,18 @@
 
 import { FormEvent, useState } from "react";
 
-export function ContactForm() {
+interface ContactFormProps {
+  initialService?: string;
+}
+
+export function ContactForm({ initialService }: ContactFormProps) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
   );
+  const initialMessage = initialService
+    ? `Tôi cần tư vấn về dịch vụ: ${initialService}.`
+    : "";
 
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -61,6 +68,7 @@ export function ContactForm() {
         name="message"
         required
         placeholder="Nội dung yêu cầu tư vấn"
+        defaultValue={initialMessage}
         rows={5}
         className="w-full rounded-lg border border-slate-300 px-3 py-2"
       />

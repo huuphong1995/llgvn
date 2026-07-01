@@ -1,35 +1,42 @@
+import { revalidatePath } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { z } from "zod";
-import Article from "@/models/Article";
-import { connectDb } from "@/lib/db";
-import { createSlug } from "@/lib/articles";
+import { createArticle, getArticles } from "@/lib/articles";
+import { optionalArticleImageSchema } from "@/lib/article-image-validation";
+import { imageDisplaySchema } from "@/lib/image-display-validation";
 import { verifyAdminToken } from "@/lib/auth";
 
 const articleSchema = z.object({
   title: z.string().min(10),
   summary: z.string().min(10),
   content: z.string().min(20),
+  image: optionalArticleImageSchema,
+  imageDisplay: imageDisplaySchema,
+  imageWidth: z.number().int().positive().optional(),
+  imageHeight: z.number().int().positive().optional(),
   category: z.enum(["legal-updates", "guidelines", "case-studies"]),
   tags: z.array(z.string()).default([]),
   isFeatured: z.boolean().default(false),
 });
 
+function revalidateArticlePages() {
+  revalidatePath("/");
+  revalidatePath("/news");
+  revalidatePath("/knowledge");
+  revalidatePath("/knowledge/[slug]", "page");
+}
+
 export async function GET(request: NextRequest) {
-  const query = request.nextUrl.searchParams.get("q");
-  const category = request.nextUrl.searchParams.get("category");
-  await connectDb();
+  const query = request.nextUrl.searchParams.get("q") ?? undefined;
+  const category = request.nextUrl.searchParams.get("category") ?? undefined;
 
-  const filter: Record<string, unknown> = {};
-  if (query) {
-    filter.$or = [
-      { title: { $regex: query, $options: "i" } },
-      { summary: { $regex: query, $options: "i" } },
-    ];
-  }
-  if (category) filter.category = category;
+  const articles = await getArticles({
+    q: query,
+    category,
+    limit: 200,
+  });
 
-  const articles = await Article.find(filter).sort({ createdAt: -1 });
   return NextResponse.json(articles);
 }
 
@@ -45,10 +52,12 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  await connectDb();
-  const article = await Article.create({
-    ...parsed.data,
-    slug: createSlug(parsed.data.title),
-  });
-  return NextResponse.json(article, { status: 201 });
+  try {
+    const article = await createArticle(parsed.data);
+    revalidateArticlePages();
+    return NextResponse.json(article, { status: 201 });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Tạo bài viết thất bại.";
+    return NextResponse.json({ error: message }, { status: 400 });
+  }
 }

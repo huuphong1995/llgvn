@@ -32,17 +32,17 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
         <Navbar />
-        <main className="w-full flex-1">{children}</main>
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-2">
+        <main className="w-full flex-1 pb-20 md:pb-0">{children}</main>
+        <div className="fixed bottom-3 right-3 z-50 flex flex-col gap-2 md:bottom-4 md:right-4">
           <a
             href="tel:0862564895"
-            className="rounded-full bg-emerald-600 px-4 py-2 text-sm font-bold text-white shadow-lg"
+            className="rounded-full bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-lg md:px-4 md:text-sm"
           >
             Gọi tư vấn
           </a>
           <a
             href="/contact"
-            className="rounded-full bg-sky-700 px-4 py-2 text-sm font-bold text-white shadow-lg"
+            className="rounded-full bg-sky-700 px-3 py-2 text-xs font-bold text-white shadow-lg md:px-4 md:text-sm"
           >
             Gửi yêu cầu
           </a>

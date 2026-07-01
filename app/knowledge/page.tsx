@@ -3,6 +3,7 @@ import { CategoryList } from "@/components/CategoryList";
 import { SearchBar } from "@/components/SearchBar";
 import { getArticles } from "@/lib/articles";
 import Link from "next/link";
+import { PageContainer } from "@/components/PageContainer";
 
 interface KnowledgePageProps {
   searchParams: Promise<{ q?: string; category?: string; page?: string }>;
@@ -19,7 +20,7 @@ export default async function KnowledgePage({ searchParams }: KnowledgePageProps
   });
 
   return (
-    <div className="space-y-6">
+    <PageContainer className="space-y-6">
       <section>
         <h1 className="text-3xl font-bold">Kho kiến thức</h1>
         <p className="mt-2 text-slate-700">
@@ -54,6 +55,6 @@ export default async function KnowledgePage({ searchParams }: KnowledgePageProps
           </Link>
         )}
       </div>
-    </div>
+    </PageContainer>
   );
 }

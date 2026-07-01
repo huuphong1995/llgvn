@@ -1,10 +1,11 @@
 import Image from "next/image";
 import logoImage from "@/LLGVN.jpg";
+import { SITE_CONTAINER_CLASS } from "@/lib/constants";
 
 export function Footer() {
   return (
     <footer className="mt-16 border-t border-slate-200 bg-slate-950 text-slate-200">
-      <div className="mx-auto grid w-full max-w-7xl gap-8 px-4 py-12 md:grid-cols-4">
+      <div className={`${SITE_CONTAINER_CLASS} grid gap-8 py-12 md:grid-cols-4`}>
         <div>
           <Image
             src={logoImage}

@@ -1,3 +1,5 @@
+import type { ServiceImageDisplay } from "@/lib/service-image-display";
+
 export type ArticleCategory = "legal-updates" | "guidelines" | "case-studies";
 
 export interface Article {
@@ -6,6 +8,10 @@ export interface Article {
   slug: string;
   summary: string;
   content: string;
+  image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
+  imageDisplay?: ServiceImageDisplay;
   category: ArticleCategory;
   tags: string[];
   isFeatured: boolean;

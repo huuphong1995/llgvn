@@ -1,27 +1,23 @@
 import Image from "next/image";
 import Link from "next/link";
+import { Fragment } from "react";
 import { ArticleCard } from "@/components/ArticleCard";
+import { ServiceTileCard } from "@/components/ServiceTileCard";
 import { getArticles } from "@/lib/articles";
+import { getServiceSlug } from "@/lib/featured-services";
+import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
+import { SITE_CONTAINER_CLASS } from "@/lib/constants";
 import heroBackground from "@/models/nenllgvn.png";
+
+export const dynamic = "force-dynamic";
 
 export default async function Home() {
   const featured = (await getArticles()).filter((article) => article.isFeatured);
-
-  const serviceTiles = [
-    "Thử nghiệm thực phẩm",
-    "Kiểm nghiệm nước",
-    "Kiểm nghiệm đất",
-    "Công bố mỹ phẩm",
-    "Công bố thực phẩm chức năng",
-    "Tư vấn ĐTM",
-    "Giấy phép môi trường",
-    "Hồ sơ pháp lý y tế",
-    "Đào tạo ISO/IEC 17025",
-  ];
+  const serviceSections = await getResolvedFeaturedServiceSections();
 
   return (
     <div className="space-y-12 pb-12">
-      <section className="relative overflow-hidden bg-slate-900 px-4 py-20 text-white">
+      <section className="relative overflow-hidden bg-slate-900 py-14 text-white md:py-20">
         <Image
           src={heroBackground}
           alt="Nền LLG VN"
@@ -30,24 +26,27 @@ export default async function Home() {
           priority
         />
         <div className="absolute inset-0 bg-slate-900/45" />
-        <div className="relative mx-auto max-w-7xl">
+        <div className={`relative ${SITE_CONTAINER_CLASS}`}>
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">
             LLG VN
           </p>
-          <h1 className="mt-4 max-w-4xl text-4xl font-black leading-tight md:text-6xl">
-            Chính xác - Hiệu quả - Đáng tin cậy
+          <h1 className="mt-4 max-w-4xl text-3xl font-black leading-tight sm:text-4xl md:text-6xl">
+            Chính xác - Hiệu quả - Tin cậy
           </h1>
           <p className="mt-4 max-w-2xl text-slate-100">
             Dịch vụ tư vấn và kiểm nghiệm toàn diện, giúp doanh nghiệp đáp ứng yêu cầu pháp lý
             khắt khe và nâng cao giá trị thương hiệu trên thị trường.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href="/about" className="rounded-lg bg-white px-5 py-2.5 font-bold text-slate-900">
+            <Link
+              href="/about"
+              className="rounded-lg bg-white px-4 py-2.5 text-sm font-bold text-slate-900 sm:px-5 sm:text-base"
+            >
               Tìm hiểu thêm
             </Link>
             <Link
               href="/contact"
-              className="rounded-lg border border-white/80 px-5 py-2.5 font-bold text-white"
+              className="rounded-lg border border-white/80 px-4 py-2.5 text-sm font-bold text-white sm:px-5 sm:text-base"
             >
               Nhận báo giá
             </Link>
@@ -55,10 +54,10 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4">
-        <div className="mb-5 flex items-end justify-between">
+      <section className={SITE_CONTAINER_CLASS}>
+        <div className="mb-5 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-end">
           <div>
-            <h2 className="text-3xl font-bold">Dịch vụ tiêu biểu</h2>
+            <h2 className="text-2xl font-bold sm:text-3xl">Dịch vụ tiêu biểu</h2>
             <p className="mt-1 text-slate-600">
               Cấu trúc dịch vụ phân tầng theo nhóm ngành, tương tự mô hình portal doanh nghiệp.
             </p>
@@ -67,39 +66,44 @@ export default async function Home() {
             Xem toàn bộ dịch vụ →
           </Link>
         </div>
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {serviceTiles.map((service) => (
-            <article
-              key={service}
-              className="group rounded-xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
+        {serviceSections.map((section, sectionIndex) => (
+          <Fragment key={section.heading}>
+            <h3
+              className={`mb-3 text-2xl font-medium text-emerald-700 ${sectionIndex > 0 ? "mt-8" : ""}`}
             >
-              <h3 className="font-semibold text-slate-900">{service}</h3>
-              <p className="mt-2 text-sm text-slate-600">
-                Xây dựng hồ sơ theo chuẩn, giảm rủi ro trả hồ sơ và tối ưu tiến độ phê duyệt.
-              </p>
-              <p className="mt-3 text-sm font-bold text-sky-700 group-hover:text-emerald-700">
-                Xem thêm &gt;
-              </p>
-            </article>
-          ))}
-        </div>
+              {section.heading}
+            </h3>
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {section.tiles.map((item) => (
+                <ServiceTileCard
+                  key={item.title}
+                  title={item.title}
+                  image={item.image}
+                  imageDisplay={item.imageDisplay}
+                  isoLabel={item.isoLabel}
+                  href={`/services/${getServiceSlug(item)}`}
+                />
+              ))}
+            </div>
+          </Fragment>
+        ))}
       </section>
 
-      <section className="mx-auto w-full max-w-7xl px-4">
-        <div className="mb-4 flex items-center justify-between">
-          <h2 className="text-3xl font-bold">Tin tức & kiến thức nổi bật</h2>
+      <section className={SITE_CONTAINER_CLASS}>
+        <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+          <h2 className="text-2xl font-bold sm:text-3xl">Tin tức & kiến thức nổi bật</h2>
           <Link href="/knowledge" className="text-sm font-semibold text-sky-700">
             Khám phá thêm
           </Link>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           {featured.map((article) => (
-            <ArticleCard key={article._id} article={article} />
+            <ArticleCard key={article._id} article={article} featuredLayout />
           ))}
         </div>
       </section>
 
-      <section className="mx-auto grid w-full max-w-7xl gap-4 px-4 lg:grid-cols-[2fr,1fr]">
+      <section className={`${SITE_CONTAINER_CLASS} grid gap-4 lg:grid-cols-[2fr,1fr]`}>
         <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-sky-700 p-8 text-white">
           <h2 className="text-3xl font-bold">Liên hệ với LLG VN</h2>
           <p className="mt-2 max-w-xl text-emerald-50">

@@ -5,6 +5,7 @@ export interface ArticleDocument {
   slug: string;
   summary: string;
   content: string;
+  image?: string;
   category: "legal-updates" | "guidelines" | "case-studies";
   tags: string[];
   isFeatured: boolean;
@@ -18,6 +19,7 @@ const ArticleSchema = new Schema<ArticleDocument>(
     slug: { type: String, required: true, unique: true, trim: true },
     summary: { type: String, required: true },
     content: { type: String, required: true },
+    image: { type: String, default: "" },
     category: {
       type: String,
       required: true,

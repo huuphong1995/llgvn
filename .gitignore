@@ -24,6 +24,11 @@
 .DS_Store
 *.pem
 
+# uploaded service images
+/public/uploads/
+/data/service-images.json
+/data/articles.json
+
 # debug
 npm-debug.log*
 yarn-debug.log*
@@ -39,3 +44,5 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+.vercel
