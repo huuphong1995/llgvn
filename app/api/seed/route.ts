@@ -10,10 +10,10 @@ export async function POST() {
   await Article.insertMany(sampleArticles);
   const existing = await User.findOne({ username: "admin" });
   if (existing) {
-    existing.password = "admin123456";
+    existing.password = "NgayMoiVuiVe@123";
     await existing.save();
   } else {
-    await User.create({ username: "admin", password: "admin123456" });
+    await User.create({ username: "admin", password: "NgayMoiVuiVe@123" });
   }
 
   return NextResponse.json({ success: true, message: "Seed completed." });

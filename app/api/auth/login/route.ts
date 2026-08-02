@@ -4,7 +4,7 @@ import { connectDb } from "@/lib/db";
 import User from "@/models/User";
 
 const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123456";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "NgayMoiVuiVe@123";
 
 function matchesFallbackAdmin(username: string, password: string) {
   return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;

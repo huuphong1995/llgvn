@@ -59,7 +59,7 @@ This seeds:
 
 ## Admin Credentials
 - Username: `admin`
-- Password: `admin123456`
+- Password: `NgayMoiVuiVe@123`
 
 Use `/admin/login` to sign in and publish articles.
 
