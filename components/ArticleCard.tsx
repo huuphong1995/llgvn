@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { ArticleImageFrame } from "@/components/ArticleImageFrame";
 import { Article } from "@/types/article";
@@ -8,7 +7,7 @@ interface ArticleCardProps {
   featuredLayout?: boolean;
 }
 
-export function ArticleCard({ article, featuredLayout = false }: ArticleCardProps) {
+export function ArticleCard({ article }: ArticleCardProps) {
   const categoryMap: Record<Article["category"], string> = {
     "legal-updates": "Cập nhật pháp lý",
     guidelines: "Hướng dẫn",
@@ -19,9 +18,10 @@ export function ArticleCard({ article, featuredLayout = false }: ArticleCardProp
     article.image ||
     "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=1200&q=80";
 
-  const imageDisplay = featuredLayout
-    ? { ...article.imageDisplay, fit: "contain" as const }
-    : article.imageDisplay;
+  const imageDisplay = {
+    ...article.imageDisplay,
+    fit: "contain" as const,
+  };
 
   return (
     <article className="overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">

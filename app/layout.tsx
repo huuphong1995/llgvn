@@ -1,17 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
+import { FloatingContactButtons } from "@/components/FloatingContactButtons";
 import { Footer } from "@/components/Footer";
 import { Navbar } from "@/components/Navbar";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const inter = Inter({
+  variable: "--font-inter",
+  subsets: ["latin", "vietnamese"],
 });
 
 export const metadata: Metadata = {
@@ -26,27 +22,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="vi"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col bg-slate-50 text-slate-900">
+    <html lang="vi" className={`${inter.variable} h-full antialiased`}>
+      <body className={`${inter.className} flex min-h-full flex-col bg-slate-50 text-slate-900`}>
         <Navbar />
-        <main className="w-full flex-1 pb-20 md:pb-0">{children}</main>
-        <div className="fixed bottom-3 right-3 z-50 flex flex-col gap-2 md:bottom-4 md:right-4">
-          <a
-            href="tel:0862564895"
-            className="rounded-full bg-emerald-600 px-3 py-2 text-xs font-bold text-white shadow-lg md:px-4 md:text-sm"
-          >
-            Gọi tư vấn
-          </a>
-          <a
-            href="/contact"
-            className="rounded-full bg-sky-700 px-3 py-2 text-xs font-bold text-white shadow-lg md:px-4 md:text-sm"
-          >
-            Gửi yêu cầu
-          </a>
-        </div>
+        <main className="w-full flex-1 pb-28 md:pb-0">{children}</main>
+        <FloatingContactButtons />
         <Footer />
       </body>
     </html>

@@ -1,4 +1,3 @@
-import slugify from "slugify";
 import ArticleModel from "@/models/Article";
 import {
   createArticleInStore,
@@ -10,11 +9,10 @@ import {
   type ArticleInput,
 } from "@/lib/article-store";
 import { connectDb } from "@/lib/db";
+import { createSlug } from "@/lib/slug";
 import type { Article } from "@/types/article";
 
-export function createSlug(input: string) {
-  return slugify(input, { lower: true, strict: true, trim: true, locale: "vi" });
-}
+export { createSlug };
 
 function filterArticles(
   articles: Article[],

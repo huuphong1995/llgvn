@@ -12,7 +12,15 @@ import heroBackground from "@/models/nenllgvn.png";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const featured = (await getArticles()).filter((article) => article.isFeatured);
+  const articles = await getArticles();
+  const featuredKnowledge = articles.filter(
+    (article) =>
+      article.isFeatured &&
+      (article.category === "guidelines" || article.category === "case-studies"),
+  );
+  const featuredNews = articles.filter(
+    (article) => article.isFeatured && article.category === "legal-updates",
+  );
   const serviceSections = await getResolvedFeaturedServiceSections();
 
   return (
@@ -30,13 +38,32 @@ export default async function Home() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">
             LLG VN
           </p>
-          <h1 className="mt-4 max-w-4xl text-3xl font-black leading-tight sm:text-4xl md:text-6xl">
-            Chính xác - Hiệu quả - Tin cậy
+          <h1 className="mt-4 max-w-5xl whitespace-nowrap text-xl font-semibold tracking-wide sm:text-3xl md:text-4xl lg:text-[2.75rem]">
+            CHUYÊN NGHIỆP - TẬN TÂM - HIỆU QUẢ
           </h1>
-          <p className="mt-4 max-w-2xl text-slate-100">
-            Dịch vụ tư vấn và kiểm nghiệm toàn diện, giúp doanh nghiệp đáp ứng yêu cầu pháp lý
-            khắt khe và nâng cao giá trị thương hiệu trên thị trường.
-          </p>
+          <ul className="mt-4 max-w-2xl space-y-2 text-sm text-slate-100 sm:text-base">
+            {[
+              "Dịch vụ tư vấn thử nghiệm",
+              "Dịch vụ tư vấn công bố",
+              "Dịch vụ đào tạo tư vấn ISO",
+            ].map((label) => (
+              <li key={label} className="flex items-center gap-2.5">
+                <span
+                  className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-emerald-400/90 text-slate-900"
+                  aria-hidden
+                >
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+                {label}
+              </li>
+            ))}
+          </ul>
           <div className="mt-8 flex flex-wrap gap-3">
             <Link
               href="/about"
@@ -58,9 +85,6 @@ export default async function Home() {
         <div className="mb-5 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-end">
           <div>
             <h2 className="text-2xl font-bold sm:text-3xl">Dịch vụ tiêu biểu</h2>
-            <p className="mt-1 text-slate-600">
-              Cấu trúc dịch vụ phân tầng theo nhóm ngành, tương tự mô hình portal doanh nghiệp.
-            </p>
           </div>
           <Link href="/services" className="text-sm font-semibold text-sky-700">
             Xem toàn bộ dịch vụ →
@@ -89,19 +113,37 @@ export default async function Home() {
         ))}
       </section>
 
-      <section className={SITE_CONTAINER_CLASS}>
-        <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
-          <h2 className="text-2xl font-bold sm:text-3xl">Tin tức & kiến thức nổi bật</h2>
-          <Link href="/knowledge" className="text-sm font-semibold text-sky-700">
-            Khám phá thêm
-          </Link>
-        </div>
-        <div className="grid gap-4 md:grid-cols-3">
-          {featured.map((article) => (
-            <ArticleCard key={article._id} article={article} featuredLayout />
-          ))}
-        </div>
-      </section>
+      {featuredKnowledge.length > 0 ? (
+        <section className={SITE_CONTAINER_CLASS}>
+          <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+            <h2 className="text-2xl font-bold sm:text-3xl">Kiến thức nổi bật</h2>
+            <Link href="/knowledge" className="text-sm font-semibold text-sky-700">
+              Xem thêm kiến thức →
+            </Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {featuredKnowledge.map((article) => (
+              <ArticleCard key={article._id} article={article} featuredLayout />
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      {featuredNews.length > 0 ? (
+        <section className={SITE_CONTAINER_CLASS}>
+          <div className="mb-4 flex flex-col items-start justify-between gap-2 sm:flex-row sm:items-center">
+            <h2 className="text-2xl font-bold sm:text-3xl">Tin tức</h2>
+            <Link href="/news" className="text-sm font-semibold text-sky-700">
+              Xem thêm tin tức →
+            </Link>
+          </div>
+          <div className="grid gap-4 md:grid-cols-3">
+            {featuredNews.map((article) => (
+              <ArticleCard key={article._id} article={article} featuredLayout />
+            ))}
+          </div>
+        </section>
+      ) : null}
 
       <section className={`${SITE_CONTAINER_CLASS} grid gap-4 lg:grid-cols-[2fr,1fr]`}>
         <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-sky-700 p-8 text-white">

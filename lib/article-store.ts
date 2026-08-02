@@ -1,8 +1,8 @@
 import { randomUUID } from "crypto";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import path from "path";
-import slugify from "slugify";
 import { sampleArticles } from "@/lib/sample-data";
+import { createSlug } from "@/lib/slug";
 import {
   normalizeServiceImageDisplay,
   type ServiceImageDisplay,
@@ -23,10 +23,6 @@ export type ArticleInput = {
   tags: string[];
   isFeatured: boolean;
 };
-
-function createSlug(input: string) {
-  return slugify(input, { lower: true, strict: true, trim: true, locale: "vi" });
-}
 
 function createDefaultArticles(): Article[] {
   const now = new Date().toISOString();

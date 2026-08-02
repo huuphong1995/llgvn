@@ -66,16 +66,19 @@ export default async function ServiceArticlePage({ params }: ServiceArticlePageP
           <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
             {service.title}
           </p>
-          <div className="relative mt-3 h-72 w-full overflow-hidden rounded-lg bg-slate-100">
+          <div className="relative mt-3 flex min-h-56 w-full items-center justify-center overflow-hidden rounded-lg bg-slate-100 sm:min-h-72">
             {child.isoLabel !== undefined ? (
-              <IsoLabelVisual label={child.isoLabel} />
+              <div className="relative h-72 w-full">
+                <IsoLabelVisual label={child.isoLabel} />
+              </div>
             ) : (
               <Image
                 src={child.image ?? service.image}
                 alt={child.title}
-                fill
+                width={1200}
+                height={800}
                 unoptimized
-                className="object-cover"
+                className="h-auto max-h-[28rem] w-full object-contain"
               />
             )}
           </div>

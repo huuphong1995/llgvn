@@ -288,7 +288,7 @@ export function AdminArticlesManager({ initialArticles }: AdminArticlesManagerPr
     setMessage(
       article.isFeatured
         ? "Đã bỏ hiển thị nổi bật trên trang chủ."
-        : "Đã đưa bài lên mục Tin tức & kiến thức nổi bật trang chủ.",
+        : "Đã đưa bài lên mục nổi bật trên trang chủ.",
     );
     setWorking(false);
   }
@@ -301,7 +301,8 @@ export function AdminArticlesManager({ initialArticles }: AdminArticlesManagerPr
           <p className="mt-2 text-sm text-slate-600">
             Tin tức hiển thị tại <strong>/news</strong>. Kiến thức hiển thị tại{" "}
             <strong>/knowledge</strong>. Bài đánh dấu nổi bật sẽ xuất hiện ở mục{" "}
-            <strong>Tin tức & kiến thức nổi bật</strong> trên trang chủ.
+            <strong>Kiến thức nổi bật</strong> hoặc <strong>Tin tức</strong> trên trang chủ
+            theo loại bài.
           </p>
         </div>
         <button
@@ -579,7 +580,7 @@ export function AdminArticlesManager({ initialArticles }: AdminArticlesManagerPr
                 setForm((current) => ({ ...current, isFeatured: event.target.checked }))
               }
             />
-            Hiển thị ở mục <strong>Tin tức & kiến thức nổi bật</strong> trên trang chủ
+            Hiển thị nổi bật trên trang chủ (Kiến thức nổi bật hoặc Tin tức theo loại bài)
           </label>
         </div>
 

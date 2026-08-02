@@ -1,4 +1,4 @@
-import { createSlug } from "@/lib/articles";
+import { createSlug } from "@/lib/slug";
 import type { ServiceImageDisplay } from "@/lib/service-image-display";
 
 export type FeaturedServiceItem = {
