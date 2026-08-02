@@ -30,7 +30,7 @@ export default async function Home() {
           src={heroBackground}
           alt="Nền LLG VN"
           fill
-          className="absolute inset-0 object-cover"
+          className="absolute inset-0 object-cover object-[78%_center] sm:object-[70%_center] md:object-center"
           priority
         />
         <div className="absolute inset-0 bg-slate-900/45" />
@@ -38,7 +38,7 @@ export default async function Home() {
           <p className="text-sm font-semibold uppercase tracking-[0.2em] text-sky-200">
             LLG VN
           </p>
-          <h1 className="mt-4 max-w-5xl whitespace-nowrap text-xl font-semibold tracking-wide sm:text-3xl md:text-4xl lg:text-[2.75rem]">
+          <h1 className="mt-4 max-w-5xl text-xl font-semibold tracking-wide sm:whitespace-nowrap sm:text-3xl md:text-4xl lg:text-[2.75rem]">
             CHUYÊN NGHIỆP - TẬN TÂM - HIỆU QUẢ
           </h1>
           <ul className="mt-4 max-w-2xl space-y-2 text-sm text-slate-100 sm:text-base">
