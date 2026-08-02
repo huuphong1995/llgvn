@@ -22,7 +22,8 @@ export default function AdminLoginPage() {
     });
 
     if (!response.ok) {
-      setError("Thông tin đăng nhập không hợp lệ.");
+      const data = (await response.json().catch(() => null)) as { error?: string } | null;
+      setError(data?.error || "Thông tin đăng nhập không hợp lệ.");
       return;
     }
 

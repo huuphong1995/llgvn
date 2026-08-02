@@ -3,31 +3,76 @@ import { createAdminToken } from "@/lib/auth";
 import { connectDb } from "@/lib/db";
 import User from "@/models/User";
 
-export async function POST(request: NextRequest) {
-  const body = await request.json();
-  await connectDb();
+const ADMIN_USERNAME = process.env.ADMIN_USERNAME || "admin";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "admin123456";
 
-  let user = await User.findOne({ username: body.username });
-  if (!user && body.username === "admin") {
-    user = await User.create({ username: "admin", password: "admin123456" });
+function matchesFallbackAdmin(username: string, password: string) {
+  return username === ADMIN_USERNAME && password === ADMIN_PASSWORD;
+}
+
+async function matchesMongoAdmin(username: string, password: string) {
+  try {
+    await connectDb();
+
+    let user = await User.findOne({ username });
+    if (!user && username === ADMIN_USERNAME) {
+      user = await User.create({
+        username: ADMIN_USERNAME,
+        password: ADMIN_PASSWORD,
+      });
+    }
+
+    if (!user) return false;
+    return user.comparePassword(password);
+  } catch {
+    // Không có MongoDB (thường gặp trên Vercel) → bỏ qua.
+    return false;
   }
+}
 
-  if (!user || !(await user.comparePassword(body.password))) {
+export async function POST(request: NextRequest) {
+  try {
+    const body = (await request.json()) as {
+      username?: string;
+      password?: string;
+    };
+
+    const username = String(body.username || "").trim();
+    const password = String(body.password || "");
+
+    if (!username || !password) {
+      return NextResponse.json(
+        { error: "Vui lòng nhập đầy đủ tên đăng nhập và mật khẩu." },
+        { status: 400 },
+      );
+    }
+
+    const ok =
+      matchesFallbackAdmin(username, password) ||
+      (await matchesMongoAdmin(username, password));
+
+    if (!ok) {
+      return NextResponse.json(
+        { error: "Thông tin đăng nhập không hợp lệ" },
+        { status: 401 },
+      );
+    }
+
+    const token = await createAdminToken(username);
+    const response = NextResponse.json({ success: true });
+    response.cookies.set("llg_admin_token", token, {
+      httpOnly: true,
+      maxAge: 60 * 60 * 12,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return response;
+  } catch {
     return NextResponse.json(
-      { error: "Thông tin đăng nhập không hợp lệ" },
-      { status: 401 },
+      { error: "Không thể đăng nhập. Vui lòng thử lại." },
+      { status: 500 },
     );
   }
-
-  const token = await createAdminToken(user.username);
-  const response = NextResponse.json({ success: true });
-  response.cookies.set("llg_admin_token", token, {
-    httpOnly: true,
-    maxAge: 60 * 60 * 12,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
-    path: "/",
-  });
-
-  return response;
 }
