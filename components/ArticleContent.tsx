@@ -1,9 +1,15 @@
 import type { ReactNode } from "react";
 
+type BulletBlock = {
+  type: "bullets";
+  tone: "success" | "danger" | "neutral" | "point";
+  items: string[];
+};
+
 type ContentBlock =
   | { type: "heading"; tone: "success" | "warning" | "info" | "danger"; text: string }
   | { type: "paragraph"; text: string }
-  | { type: "bullets"; tone: "success" | "danger" | "neutral" | "point"; items: string[] }
+  | BulletBlock
   | { type: "divider" }
   | { type: "cta"; text: string };
 
@@ -38,7 +44,7 @@ function parseArticleContent(content: string): ContentBlock[] {
     .filter(Boolean);
 
   const blocks: ContentBlock[] = [];
-  let bulletBuffer: Extract<ContentBlock, { type: "bullets" }> | null = null;
+  let bulletBuffer: BulletBlock | null = null;
 
   function flushBullets() {
     if (bulletBuffer && bulletBuffer.items.length > 0) {
@@ -47,7 +53,7 @@ function parseArticleContent(content: string): ContentBlock[] {
     bulletBuffer = null;
   }
 
-  function pushBullet(tone: Extract<ContentBlock, { type: "bullets" }>["tone"], text: string) {
+  function pushBullet(tone: BulletBlock["tone"], text: string) {
     if (!bulletBuffer || bulletBuffer.tone !== tone) {
       flushBullets();
       bulletBuffer = { type: "bullets", tone, items: [] };
@@ -109,10 +115,10 @@ function parseArticleContent(content: string): ContentBlock[] {
     }
 
     const previous = lastBlock();
+    // Các dòng ngắn ngay dưới tiêu đề mục được coi là danh sách.
+    // (bulletBuffer chưa flush nên previous vẫn là heading)
     const underHeadingList =
-      line.length < 140 &&
-      !line.endsWith(":") &&
-      (previous?.type === "heading" || bulletBuffer?.tone === "neutral");
+      line.length < 140 && !line.endsWith(":") && previous?.type === "heading";
 
     if (underHeadingList) {
       pushBullet("neutral", line);
