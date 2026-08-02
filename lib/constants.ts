@@ -11,6 +11,7 @@ export const SITE_CONTACT = {
   phoneDisplay: "0862 564 895",
   phoneTel: "0862564895",
   email: "info@llgbiotech.vn",
+  address: "48 Dân trí, Tân Hòa, TP. Hồ Chí Minh, Việt Nam",
   zaloUrl: "https://zalo.me/0862564895",
   facebookUrl: "https://www.facebook.com/61587164083262",
 } as const;

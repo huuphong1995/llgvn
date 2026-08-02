@@ -25,7 +25,7 @@ export function Footer() {
           <h4 className="font-semibold text-white">Liên hệ</h4>
           <p className="mt-2">Điện thoại: 0862 564 895</p>
           <p>Email: info@llgbiotech.vn</p>
-          <p>Địa chỉ: Quận 1, TP. Hồ Chí Minh, Việt Nam</p>
+          <p>Địa chỉ: 48 Dân trí, Tân Hòa, TP. Hồ Chí Minh, Việt Nam</p>
         </div>
         <div className="text-sm">
           <h4 className="font-semibold text-white">Dịch vụ nhanh</h4>
@@ -39,7 +39,7 @@ export function Footer() {
           <h4 className="font-semibold text-white">Giờ làm việc</h4>
           <p className="mt-2">Thứ 2 - Thứ 6: 08:00 - 18:00</p>
           <p>Thứ 7: 08:00 - 12:00</p>
-          <p>Hỗ trợ: 24/7 qua email</p>
+          <p>Hỗ trợ: 24/7 qua Zalo</p>
         </div>
       </div>
     </footer>
