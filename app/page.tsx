@@ -144,22 +144,6 @@ export default async function Home() {
           </div>
         </section>
       ) : null}
-
-      <section className={`${SITE_CONTAINER_CLASS} grid gap-4 lg:grid-cols-[2fr,1fr]`}>
-        <div className="rounded-2xl bg-gradient-to-r from-emerald-600 to-sky-700 p-8 text-white">
-          <h2 className="text-3xl font-bold">Liên hệ với LLG VN</h2>
-          <p className="mt-2 max-w-xl text-emerald-50">
-            Đội ngũ chuyên gia của chúng tôi hỗ trợ tư vấn nhanh trong ngày cho hồ sơ pháp lý
-            y tế, thực phẩm và môi trường.
-          </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-6">
-          <p className="text-sm text-slate-500">Hotline</p>
-          <p className="text-2xl font-black text-slate-900">0862 564 895</p>
-          <p className="mt-3 text-sm text-slate-500">Email</p>
-          <p className="font-semibold text-slate-900">info@llgbiotech.vn</p>
-        </div>
-      </section>
     </div>
   );
 }
