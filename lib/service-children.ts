@@ -7,10 +7,18 @@ export type ServiceChildArticle = {
   summary: string;
   image?: string;
   isoLabel?: string;
+  content?: string;
   sectionRange?: [number, number];
 };
 
-const serviceChildrenMap: Record<string, ServiceChildArticle[]> = {
+export type StoredServiceChild = ServiceChildArticle & {
+  _id: string;
+  parentSlug: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export const DEFAULT_SERVICE_CHILDREN_MAP: Record<string, ServiceChildArticle[]> = {
   "dich-vu-tu-van-cong-bo-thuc-pham": [
     {
       slug: "rui-ro-khi-chua-cong-bo",
@@ -154,15 +162,22 @@ const serviceChildrenMap: Record<string, ServiceChildArticle[]> = {
   ],
 };
 
-export function getServiceChildren(
+export async function getServiceChildren(
   parentSlug: string,
   parent: FeaturedServiceItem,
-): ServiceChildArticle[] {
-  const configured = serviceChildrenMap[parentSlug];
-  if (configured) {
+): Promise<ServiceChildArticle[]> {
+  const { listServiceChildren } = await import("@/lib/service-children-store");
+  const configured = await listServiceChildren(parentSlug);
+
+  if (configured.length > 0) {
     return configured.map((child) => ({
-      ...child,
-      image: child.image ?? parent.image,
+      slug: child.slug,
+      title: child.title,
+      summary: child.summary,
+      content: child.content,
+      image: child.image,
+      isoLabel: child.isoLabel,
+      sectionRange: child.sectionRange,
     }));
   }
 
@@ -176,12 +191,13 @@ export function getServiceChildren(
   ];
 }
 
-export function getServiceChildArticle(
+export async function getServiceChildArticle(
   parentSlug: string,
   articleSlug: string,
   parent: FeaturedServiceItem,
 ) {
-  return getServiceChildren(parentSlug, parent).find((child) => child.slug === articleSlug) ?? null;
+  const children = await getServiceChildren(parentSlug, parent);
+  return children.find((child) => child.slug === articleSlug) ?? null;
 }
 
 export function getChildArticleContent(

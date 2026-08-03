@@ -8,6 +8,7 @@ interface ServiceSubArticleCardProps {
   image: string;
   href: string;
   isoLabel?: string;
+  hasCustomImage?: boolean;
 }
 
 export function ServiceSubArticleCard({
@@ -16,14 +17,17 @@ export function ServiceSubArticleCard({
   image,
   href,
   isoLabel,
+  hasCustomImage = false,
 }: ServiceSubArticleCardProps) {
+  const showIsoVisual = isoLabel !== undefined && !hasCustomImage;
+
   return (
     <Link
       href={href}
       className="group flex flex-col overflow-hidden rounded border border-slate-200 bg-white transition hover:border-sky-200 hover:shadow-sm sm:flex-row"
     >
       <div className="relative h-[180.48px] w-full shrink-0 overflow-hidden bg-slate-100 sm:w-[270.5px]">
-        {isoLabel !== undefined ? (
+        {showIsoVisual ? (
           <IsoLabelVisual label={isoLabel} />
         ) : (
           <Image
@@ -32,7 +36,7 @@ export function ServiceSubArticleCard({
             width={270.5}
             height={180.48}
             unoptimized
-            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+            className="h-full w-full object-cover object-center transition duration-300 group-hover:scale-105"
           />
         )}
       </div>

@@ -37,7 +37,39 @@ function isMarkerLine(line: string) {
   );
 }
 
-function parseArticleContent(content: string): ContentBlock[] {
+function hasEmojiStructure(content: string) {
+  return /(?:^|\n)\s*[✅❌⚠️⚠📌✔👉]/.test(content);
+}
+
+function stripListPrefix(line: string) {
+  return line.replace(/^[-•*–—]\s+/, "").replace(/^\d+[\.\)]\s+/, "").trim();
+}
+
+function isNumberedItem(line: string) {
+  return /^\d+[\.\)]\s+\S/.test(line);
+}
+
+function looksLikeHeading(line: string) {
+  if (line.length === 0 || line.length > 130) return false;
+  if (line.endsWith(":")) return false;
+  if (isNumberedItem(line)) return true;
+  if (line.endsWith("?")) return true;
+  // Tiêu đề thường không kết thúc bằng dấu câu câu hoàn chỉnh.
+  if (/[.!…]$/.test(line)) return false;
+  return line.length <= 110;
+}
+
+function looksLikeBullet(line: string, previous?: string, listActive = false) {
+  if (/^[-•*–—]\s+\S/.test(line)) return true;
+  if (previous?.endsWith(":")) return true;
+  if (!listActive) return false;
+  if (isNumberedItem(line) && line.length <= 100) return false;
+  if (looksLikeHeading(line) && !previous?.endsWith(":")) return false;
+  // Các dòng ngắn trong cụm danh sách (sau "bao gồm:")
+  return line.length <= 140;
+}
+
+function parseEmojiContent(content: string): ContentBlock[] {
   const lines = content
     .split(/\r?\n/)
     .map((line) => line.trim())
@@ -115,8 +147,6 @@ function parseArticleContent(content: string): ContentBlock[] {
     }
 
     const previous = lastBlock();
-    // Các dòng ngắn ngay dưới tiêu đề mục được coi là danh sách.
-    // (bulletBuffer chưa flush nên previous vẫn là heading)
     const underHeadingList =
       line.length < 140 && !line.endsWith(":") && previous?.type === "heading";
 
@@ -137,6 +167,125 @@ function parseArticleContent(content: string): ContentBlock[] {
 
   flushBullets();
   return blocks;
+}
+
+function parsePlainContent(content: string): ContentBlock[] {
+  const rawLines = content.split(/\r?\n/);
+  const blocks: ContentBlock[] = [];
+  let bulletBuffer: BulletBlock | null = null;
+  let listActive = false;
+  let previousBlank = true;
+
+  function flushBullets() {
+    if (bulletBuffer && bulletBuffer.items.length > 0) {
+      blocks.push(bulletBuffer);
+    }
+    bulletBuffer = null;
+  }
+
+  function pushBullet(text: string) {
+    if (!bulletBuffer) {
+      bulletBuffer = { type: "bullets", tone: "neutral", items: [] };
+    }
+    bulletBuffer.items.push(stripListPrefix(text));
+    listActive = true;
+  }
+
+  function lastBlock() {
+    return blocks[blocks.length - 1];
+  }
+
+  for (let index = 0; index < rawLines.length; index += 1) {
+    const line = rawLines[index].trim();
+
+    if (!line) {
+      flushBullets();
+      listActive = false;
+      previousBlank = true;
+      continue;
+    }
+
+    const nextRaw = rawLines[index + 1];
+    const next = nextRaw?.trim() || undefined;
+    const previousLine = [...rawLines.slice(0, index)].reverse().find((item) => item.trim())?.trim();
+
+    // CTA ngắn ở cuối bài
+    if (
+      /^(liên hệ|liên hệ tư vấn|đăng ký tư vấn|nhận tư vấn)/i.test(line) &&
+      line.length < 60
+    ) {
+      flushBullets();
+      blocks.push({ type: "cta", text: line });
+      previousBlank = false;
+      listActive = false;
+      continue;
+    }
+
+    const numberedHeading =
+      isNumberedItem(line) &&
+      (line.endsWith("?") ||
+        line.length <= 90 ||
+        (next !== undefined && next.length > 70 && !isNumberedItem(next)));
+
+    if (numberedHeading) {
+      flushBullets();
+      listActive = false;
+      blocks.push({
+        type: "heading",
+        tone: "info",
+        text: stripListPrefix(line),
+      });
+      previousBlank = false;
+      continue;
+    }
+
+    if (looksLikeBullet(line, previousLine, listActive)) {
+      // Dòng mở đầu danh sách (kết thúc bằng :) giữ thành đoạn văn.
+      if (line.endsWith(":")) {
+        flushBullets();
+        blocks.push({ type: "paragraph", text: line });
+        listActive = true;
+        previousBlank = false;
+        continue;
+      }
+      pushBullet(line);
+      previousBlank = false;
+      continue;
+    }
+
+    const headingCandidate =
+      looksLikeHeading(line) &&
+      (previousBlank ||
+        lastBlock()?.type === "bullets" ||
+        (next !== undefined && next.length > line.length && next.length > 80));
+
+    if (headingCandidate) {
+      flushBullets();
+      listActive = false;
+      blocks.push({
+        type: "heading",
+        tone: previousBlank && blocks.length === 0 ? "success" : "info",
+        text: line,
+      });
+      previousBlank = false;
+      continue;
+    }
+
+    flushBullets();
+    listActive = line.endsWith(":");
+    blocks.push({ type: "paragraph", text: line });
+    previousBlank = false;
+  }
+
+  flushBullets();
+  return blocks;
+}
+
+function parseArticleContent(content: string): ContentBlock[] {
+  if (hasEmojiStructure(content)) {
+    return parseEmojiContent(content);
+  }
+  return parsePlainContent(content);
 }
 
 const headingStyles = {
@@ -180,7 +329,9 @@ export function ArticleContent({ content }: { content: string }) {
   const blocks = parseArticleContent(content);
 
   if (blocks.length === 0) {
-    return <p className="text-base leading-8 text-slate-800">{content}</p>;
+    return (
+      <p className="whitespace-pre-wrap text-base leading-8 text-slate-800">{content}</p>
+    );
   }
 
   const nodes: ReactNode[] = [];
@@ -239,7 +390,7 @@ export function ArticleContent({ content }: { content: string }) {
       nodes.push(
         <div
           key={`c-${index}`}
-          className="rounded-xl border border-sky-100 bg-gradient-to-r from-sky-50 to-emerald-50 px-5 py-4 text-base font-medium leading-7 text-slate-800"
+          className="mt-8 rounded-xl border border-sky-100 bg-gradient-to-r from-sky-50 to-emerald-50 px-5 py-4 text-base font-medium leading-7 text-slate-800"
         >
           {block.text}
         </div>,

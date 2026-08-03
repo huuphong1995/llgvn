@@ -11,6 +11,7 @@ type ServiceSectionArticle = {
   image: string;
   href: string;
   isoLabel?: string;
+  hasCustomImage?: boolean;
 };
 
 type BreadcrumbItem = {
@@ -76,6 +77,7 @@ export function ServiceSectionView({
                 image={article.image}
                 href={article.href}
                 isoLabel={article.isoLabel}
+                hasCustomImage={article.hasCustomImage}
               />
             ))}
           </div>

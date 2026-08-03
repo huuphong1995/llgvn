@@ -1,6 +1,7 @@
 import Image from "next/image";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { ArticleContent } from "@/components/ArticleContent";
 import { ContactForm } from "@/components/ContactForm";
 import { IsoLabelVisual } from "@/components/IsoLabelVisual";
 import { PageContainer } from "@/components/PageContainer";
@@ -25,7 +26,7 @@ export async function generateMetadata({
   const { slug, articleSlug } = await params;
   const serviceSections = await getResolvedFeaturedServiceSections();
   const service = getFeaturedServiceBySlug(slug, serviceSections);
-  const child = service ? getServiceChildArticle(slug, articleSlug, service) : null;
+  const child = service ? await getServiceChildArticle(slug, articleSlug, service) : null;
 
   if (!service || !child) {
     return { title: "Bài viết không tồn tại | LLG VN" };
@@ -43,10 +44,12 @@ export default async function ServiceArticlePage({ params }: ServiceArticlePageP
   const service = getFeaturedServiceBySlug(slug, serviceSections);
   if (!service) notFound();
 
-  const child = getServiceChildArticle(slug, articleSlug, service);
+  const child = await getServiceChildArticle(slug, articleSlug, service);
   if (!child) notFound();
 
-  const content = getChildArticleContent(slug, child);
+  const structuredContent = child.content
+    ? null
+    : getChildArticleContent(slug, child);
   const section = getSectionForService(slug, serviceSections);
 
   return (
@@ -66,30 +69,46 @@ export default async function ServiceArticlePage({ params }: ServiceArticlePageP
           <p className="text-xs font-bold uppercase tracking-wide text-emerald-700">
             {service.title}
           </p>
-          <div className="relative mt-3 flex min-h-56 w-full items-center justify-center overflow-hidden rounded-lg bg-slate-100 sm:min-h-72">
-            {child.isoLabel !== undefined ? (
-              <div className="relative h-72 w-full">
+          <div className="relative mt-3 w-full overflow-hidden rounded-lg bg-slate-100">
+            {child.image ? (
+              <Image
+                src={child.image}
+                alt={child.title}
+                width={1600}
+                height={900}
+                unoptimized
+                className="h-auto w-full object-cover"
+                sizes="(max-width: 768px) 100vw, 960px"
+              />
+            ) : child.isoLabel !== undefined ? (
+              <div className="relative aspect-[16/9] w-full sm:min-h-72">
                 <IsoLabelVisual label={child.isoLabel} />
               </div>
             ) : (
-              <Image
-                src={child.image ?? service.image}
-                alt={child.title}
-                width={1200}
-                height={800}
-                unoptimized
-                className="h-auto max-h-[28rem] w-full object-contain"
-              />
+              <div className="relative aspect-[16/9] w-full">
+                <Image
+                  src={service.image}
+                  alt={child.title}
+                  fill
+                  unoptimized
+                  className="object-cover object-center"
+                  sizes="(max-width: 768px) 100vw, 960px"
+                />
+              </div>
             )}
           </div>
           <h1 className="mt-6 text-3xl font-bold leading-tight text-slate-900 sm:text-4xl">
-            {content?.pageTitle ?? child.title}
+            {structuredContent?.pageTitle ?? child.title}
           </h1>
           <p className="mt-4 text-lg leading-8 text-slate-700">{child.summary}</p>
 
-          {content ? (
+          {child.content ? (
+            <div className="mt-8">
+              <ArticleContent content={child.content} />
+            </div>
+          ) : structuredContent ? (
             <div className="mt-8 space-y-8">
-              {content.sections.map((sectionBlock, index) => (
+              {structuredContent.sections.map((sectionBlock, index) => (
                 <section
                   key={`${sectionBlock.heading ?? "section"}-${index}`}
                   className="space-y-4"

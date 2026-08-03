@@ -28,6 +28,7 @@
 /public/uploads/
 /data/service-images.json
 /data/articles.json
+/data/service-children.json
 
 # debug
 npm-debug.log*

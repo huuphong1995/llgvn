@@ -34,7 +34,7 @@ export default async function ServiceParentPage({ params }: ServiceParentPagePro
   if (!service) notFound();
 
   const section = getSectionForService(slug, serviceSections);
-  const children = getServiceChildren(slug, service);
+  const children = await getServiceChildren(slug, service);
 
   const articles = children.map((child) => ({
     title: child.title,
@@ -42,6 +42,7 @@ export default async function ServiceParentPage({ params }: ServiceParentPagePro
     image: child.image ?? service.image,
     href: `/services/${slug}/${child.slug}`,
     isoLabel: child.isoLabel,
+    hasCustomImage: Boolean(child.image),
   }));
 
   return (
