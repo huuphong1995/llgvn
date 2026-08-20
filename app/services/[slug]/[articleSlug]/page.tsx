@@ -14,6 +14,7 @@ import {
   getChildArticleContent,
   getServiceChildArticle,
 } from "@/lib/service-children";
+import { buildPageMetadata } from "@/lib/seo";
 import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
 
 interface ServiceArticlePageProps {
@@ -29,13 +30,21 @@ export async function generateMetadata({
   const child = service ? await getServiceChildArticle(slug, articleSlug, service) : null;
 
   if (!service || !child) {
-    return { title: "Bài viết không tồn tại | LLG VN" };
+    return buildPageMetadata({
+      title: "Bài viết không tồn tại",
+      description: "Không tìm thấy bài viết dịch vụ trên LLG VN.",
+      path: `/services/${slug}/${articleSlug}`,
+      noIndex: true,
+    });
   }
 
-  return {
-    title: `${child.title} | LLG VN`,
+  return buildPageMetadata({
+    title: child.title,
     description: child.summary,
-  };
+    path: `/services/${slug}/${articleSlug}`,
+    image: child.image ?? service.image,
+    type: "article",
+  });
 }
 
 export default async function ServiceArticlePage({ params }: ServiceArticlePageProps) {

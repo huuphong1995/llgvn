@@ -1,9 +1,18 @@
+import type { Metadata } from "next";
 import { ArticleCard } from "@/components/ArticleCard";
 import { CategoryList } from "@/components/CategoryList";
 import { SearchBar } from "@/components/SearchBar";
 import { getArticles } from "@/lib/articles";
 import Link from "next/link";
 import { PageContainer } from "@/components/PageContainer";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Kho kiến thức",
+  description:
+    "Kho kiến thức LLG VN: hướng dẫn công bố, nghiên cứu tình huống và tài liệu tư vấn tuân thủ cho doanh nghiệp.",
+  path: "/knowledge",
+});
 
 interface KnowledgePageProps {
   searchParams: Promise<{ q?: string; category?: string; page?: string }>;

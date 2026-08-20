@@ -1,15 +1,22 @@
+import type { Metadata } from "next";
 import { ContactForm } from "@/components/ContactForm";
 import { PageContainer } from "@/components/PageContainer";
 import { SITE_CONTACT } from "@/lib/constants";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Liên hệ",
+  description: `Liên hệ LLG VN để được tư vấn công bố, thử nghiệm và ISO. Hotline ${SITE_CONTACT.phoneDisplay}, email ${SITE_CONTACT.email}.`,
+  path: "/contact",
+});
 
 type ContactPageProps = {
-  searchParams?: {
-    service?: string;
-  };
+  searchParams?: Promise<{ service?: string }> | { service?: string };
 };
 
-export default function ContactPage({ searchParams }: ContactPageProps) {
-  const service = searchParams?.service?.trim();
+export default async function ContactPage({ searchParams }: ContactPageProps) {
+  const resolved = await Promise.resolve(searchParams);
+  const service = resolved?.service?.trim();
   const initialService = service && service.length > 0 ? service : undefined;
   const mapQuery = encodeURIComponent(SITE_CONTACT.address);
 

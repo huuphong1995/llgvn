@@ -4,6 +4,7 @@ import { PageContainer } from "@/components/PageContainer";
 import { ServiceSectionView } from "@/components/ServiceSectionView";
 import { getFeaturedServiceBySlug, getSectionForService } from "@/lib/featured-services";
 import { getServiceChildren } from "@/lib/service-children";
+import { buildPageMetadata } from "@/lib/seo";
 import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
 
 interface ServiceParentPageProps {
@@ -18,13 +19,20 @@ export async function generateMetadata({
   const service = getFeaturedServiceBySlug(slug, serviceSections);
 
   if (!service) {
-    return { title: "Dịch vụ không tồn tại | LLG VN" };
+    return buildPageMetadata({
+      title: "Dịch vụ không tồn tại",
+      description: "Không tìm thấy dịch vụ trên LLG VN.",
+      path: `/services/${slug}`,
+      noIndex: true,
+    });
   }
 
-  return {
-    title: `${service.title} | LLG VN`,
-    description: `Danh sách bài viết thuộc chủ đề ${service.title} của LLG VN.`,
-  };
+  return buildPageMetadata({
+    title: service.title,
+    description: `Tư vấn ${service.title.toLowerCase()} cùng LLG VN — quy trình rõ ràng, hỗ trợ doanh nghiệp tuân thủ quy định.`,
+    path: `/services/${slug}`,
+    image: service.image,
+  });
 }
 
 export default async function ServiceParentPage({ params }: ServiceParentPageProps) {

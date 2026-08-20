@@ -1,8 +1,17 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArticleImageFrame } from "@/components/ArticleImageFrame";
 import { NewsSidebar } from "@/components/NewsSidebar";
 import { PageContainer } from "@/components/PageContainer";
 import { getArticles } from "@/lib/articles";
+import { buildPageMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Tin tức pháp lý",
+  description:
+    "Cập nhật pháp lý, quy định mới về công bố sản phẩm, an toàn thực phẩm và thiết bị y tế dành cho doanh nghiệp.",
+  path: "/news",
+});
 
 export default async function NewsPage() {
   const updates = await getArticles({ category: "legal-updates" });

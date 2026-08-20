@@ -1,9 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { SITE_CONTAINER_CLASS } from "@/lib/constants";
+import { buildPageMetadata } from "@/lib/seo";
 import heroBackground from "@/models/nenllgvn.png";
+
+export const metadata: Metadata = buildPageMetadata({
+  title: "Giới thiệu",
+  description:
+    "Tìm hiểu về LLG VN — đơn vị tư vấn công bố sản phẩm, thử nghiệm và đào tạo ISO, đồng hành cùng doanh nghiệp tuân thủ pháp luật.",
+  path: "/about",
+});
 
 function IconFlask() {
   return (

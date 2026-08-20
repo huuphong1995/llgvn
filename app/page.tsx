@@ -1,15 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { Fragment } from "react";
 import { ArticleCard } from "@/components/ArticleCard";
 import { ServiceTileCard } from "@/components/ServiceTileCard";
 import { getArticles } from "@/lib/articles";
-import { getServiceSlug } from "@/lib/featured-services";
-import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
 import { SITE_CONTAINER_CLASS } from "@/lib/constants";
+import { getServiceSlug } from "@/lib/featured-services";
+import { buildPageMetadata, DEFAULT_DESCRIPTION, SITE_TAGLINE } from "@/lib/seo";
+import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
 import heroBackground from "@/models/nenllgvn.png";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  ...buildPageMetadata({
+    title: SITE_TAGLINE,
+    description: DEFAULT_DESCRIPTION,
+    path: "/",
+  }),
+  title: {
+    absolute: `LLG VN — ${SITE_TAGLINE}`,
+  },
+};
 
 export default async function Home() {
   const articles = await getArticles();

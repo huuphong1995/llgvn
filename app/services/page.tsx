@@ -3,13 +3,15 @@ import { Fragment } from "react";
 import { PageContainer } from "@/components/PageContainer";
 import { ServiceTileCard } from "@/components/ServiceTileCard";
 import { getServiceSlug } from "@/lib/featured-services";
+import { buildPageMetadata } from "@/lib/seo";
 import { getResolvedFeaturedServiceSections } from "@/lib/service-images";
 
-export const metadata: Metadata = {
-  title: "Dịch vụ tư vấn | LLG VN",
+export const metadata: Metadata = buildPageMetadata({
+  title: "Dịch vụ tư vấn",
   description:
     "Các dịch vụ tư vấn thử nghiệm, công bố sản phẩm và đào tạo tư vấn ISO của LLG VN dành cho doanh nghiệp.",
-};
+  path: "/services",
+});
 
 export const dynamic = "force-dynamic";
 

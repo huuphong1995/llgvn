@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { ArticleContent } from "@/components/ArticleContent";
 import { ContactForm } from "@/components/ContactForm";
@@ -7,9 +8,34 @@ import { NewsSidebar } from "@/components/NewsSidebar";
 import { PageContainer } from "@/components/PageContainer";
 import { ARTICLE_CATEGORY_LABELS } from "@/lib/article-categories";
 import { getArticleBySlug, getArticles } from "@/lib/articles";
+import { buildPageMetadata } from "@/lib/seo";
 
 interface ArticlePageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({
+  params,
+}: ArticlePageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const article = await getArticleBySlug(slug);
+
+  if (!article) {
+    return buildPageMetadata({
+      title: "Bài viết không tồn tại",
+      description: "Không tìm thấy bài viết trên LLG VN.",
+      path: `/knowledge/${slug}`,
+      noIndex: true,
+    });
+  }
+
+  return buildPageMetadata({
+    title: article.title,
+    description: article.summary,
+    path: `/knowledge/${article.slug}`,
+    image: article.image,
+    type: "article",
+  });
 }
 
 export default async function ArticlePage({ params }: ArticlePageProps) {
