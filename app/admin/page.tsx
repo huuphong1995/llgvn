@@ -1,10 +1,12 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { AdminArticlesManager } from "@/components/AdminArticlesManager";
+import { AdminContactLeads } from "@/components/AdminContactLeads";
 import { AdminServiceChildrenManager } from "@/components/AdminServiceChildrenManager";
 import { AdminServiceImagesForm } from "@/components/AdminServiceImagesForm";
 import { verifyAdminToken } from "@/lib/auth";
 import { getArticles } from "@/lib/articles";
+import { listContactLeads } from "@/lib/contact-leads-store";
 import {
   featuredServiceSections,
   getAllFeaturedServices,
@@ -19,10 +21,11 @@ export default async function AdminPage() {
     redirect("/admin/login");
   }
 
-  const [articles, serviceChildren, serviceSections] = await Promise.all([
+  const [articles, serviceChildren, serviceSections, leads] = await Promise.all([
     getArticles({ limit: 100 }),
     ensureServiceChildrenStore(),
     getResolvedFeaturedServiceSections(),
+    listContactLeads(100),
   ]);
 
   const parentOptions = getAllFeaturedServices(serviceSections).map((service) => ({
@@ -30,7 +33,6 @@ export default async function AdminPage() {
     title: service.title,
   }));
 
-  // Fallback nếu resolve ảnh lỗi — vẫn có danh sách cha từ config.
   const parents =
     parentOptions.length > 0
       ? parentOptions
@@ -42,6 +44,7 @@ export default async function AdminPage() {
   return (
     <div className="space-y-6">
       <h1 className="text-3xl font-bold">Bảng điều khiển quản trị</h1>
+      <AdminContactLeads leads={leads} />
       <AdminServiceImagesForm />
       <AdminServiceChildrenManager initialItems={serviceChildren} parentOptions={parents} />
       <AdminArticlesManager initialArticles={articles} />

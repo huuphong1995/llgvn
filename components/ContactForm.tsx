@@ -4,9 +4,10 @@ import { FormEvent, useState } from "react";
 
 interface ContactFormProps {
   initialService?: string;
+  source?: string;
 }
 
-export function ContactForm({ initialService }: ContactFormProps) {
+export function ContactForm({ initialService, source = "website" }: ContactFormProps) {
   const [message, setMessage] = useState("");
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">(
     "idle",
@@ -18,34 +19,54 @@ export function ContactForm({ initialService }: ContactFormProps) {
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setStatus("loading");
-    const formData = new FormData(event.currentTarget);
+    const form = event.currentTarget;
+    const formData = new FormData(form);
 
     const payload = {
       name: formData.get("name"),
       email: formData.get("email"),
       phone: formData.get("phone"),
       message: formData.get("message"),
+      service: formData.get("service") || initialService || undefined,
+      source,
+      website: formData.get("website"),
     };
 
-    const response = await fetch("/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
 
-    if (!response.ok) {
+      if (!response.ok) {
+        setStatus("error");
+        setMessage("Không thể gửi vào lúc này. Vui lòng gọi hotline hoặc nhắn Zalo.");
+        return;
+      }
+
+      setStatus("success");
+      setMessage("Cảm ơn bạn. LLG VN đã nhận thông tin và sẽ liên hệ sớm.");
+      form.reset();
+    } catch {
       setStatus("error");
-      setMessage("Không thể gửi vào lúc này. Vui lòng thử lại.");
-      return;
+      setMessage("Không thể gửi vào lúc này. Vui lòng gọi hotline hoặc nhắn Zalo.");
     }
-
-    setStatus("success");
-    setMessage("Cảm ơn bạn. LLG VN sẽ liên hệ sớm nhất.");
-    event.currentTarget.reset();
   };
 
   return (
-    <form onSubmit={onSubmit} className="space-y-4 rounded-xl border p-6">
+    <form onSubmit={onSubmit} className="relative space-y-4 rounded-xl border p-6">
+      {initialService ? (
+        <input type="hidden" name="service" value={initialService} />
+      ) : null}
+
+      <div aria-hidden className="absolute -left-[9999px] top-auto h-0 w-0 overflow-hidden">
+        <label>
+          Website
+          <input tabIndex={-1} autoComplete="off" name="website" type="text" />
+        </label>
+      </div>
+
       <input
         name="name"
         required
@@ -53,15 +74,16 @@ export function ContactForm({ initialService }: ContactFormProps) {
         className="w-full rounded-lg border border-slate-300 px-3 py-2"
       />
       <input
+        name="phone"
+        required
+        placeholder="Số điện thoại / Zalo"
+        className="w-full rounded-lg border border-slate-300 px-3 py-2"
+      />
+      <input
         name="email"
         type="email"
         required
         placeholder="Email liên hệ"
-        className="w-full rounded-lg border border-slate-300 px-3 py-2"
-      />
-      <input
-        name="phone"
-        placeholder="Số điện thoại"
         className="w-full rounded-lg border border-slate-300 px-3 py-2"
       />
       <textarea
@@ -79,11 +101,11 @@ export function ContactForm({ initialService }: ContactFormProps) {
       >
         {status === "loading" ? "Đang gửi..." : "Gửi yêu cầu"}
       </button>
-      {message && (
+      {message ? (
         <p className={status === "error" ? "text-red-600" : "text-emerald-700"}>
           {message}
         </p>
-      )}
+      ) : null}
     </form>
   );
 }
